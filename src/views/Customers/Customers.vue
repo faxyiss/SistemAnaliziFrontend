@@ -36,7 +36,7 @@
           v-model="debtFilter"
           :options="debtFilterOptions"
           width-class="w-full md:w-56"
-          @update:model-value="() => { pagination.value.page = 1; fetchCustomers() }"
+          @update:model-value="onDebtFilterChange"
         />
       </div>
     </div>
@@ -262,6 +262,11 @@ const customerToDeleteId = ref<string | null>(null)
 
 const searchQuery = ref('')
 const debtFilter = ref('all')
+
+const onDebtFilterChange = () => {
+  pagination.value.page = 1
+  fetchCustomers()
+}
 
 const debtFilterOptions = [
   { label: 'Tüm Müşteriler', value: 'all' },

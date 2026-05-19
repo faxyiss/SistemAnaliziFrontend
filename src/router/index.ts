@@ -4,18 +4,15 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      // Proje ilk açıldığında (ana dizin) direkt Login sayfasına yönlendir
       path: '/',
       redirect: '/login',
     },
     {
       path: '/login',
       name: 'login',
-      // Sayfayı projemize tanıtıyoruz
       component: () => import('../views/auth/Login.vue'),
     },
     {
-      // Yeni eklediğimiz kayıt ol rotası
       path: '/register',
       name: 'register',
       component: () => import('../views/auth/Register.vue'),
@@ -25,22 +22,22 @@ const router = createRouter({
       component: () => import('../layouts/AppLayout.vue'),
       children: [
         {
-          path: '', // Ana panel
+          path: '',
           name: 'dashboard',
           component: () => import('../views/dashboard/Dashboard.vue'),
         },
         {
-          path: '/stocks', // Yeni Eklenen Stok Yönlendirmesi!
+          path: '/stocks',
           name: 'stocks',
           component: () => import('../views/stocks/Stocks.vue'),
         },
         {
-          path: '/customers', // Yeni Eklenen Müşteri Yönlendirmesi!
+          path: '/customers',
           name: 'customers',
           component: () => import('../views/Customers/Customers.vue'),
         },
         {
-          path: '/sales', // Yeni Eklenen Satış Yönlendirmesi!
+          path: '/sales',
           name: 'sales',
           component: () => import('../views/Sales/Sales.vue'),
         },
@@ -52,8 +49,12 @@ const router = createRouter({
         {
           path: '/expenses',
           name: 'expenses',
-          // Dosyayı oluşturduğun klasör yoluna göre burayı düzenleyebilirsin
           component: () => import('../views/Expenses/Expenses.vue'),
+        },
+        {
+          path: '/employees',
+          name: 'employees',
+          component: () => import('../views/Employees/Employees.vue'),
         },
       ],
     },

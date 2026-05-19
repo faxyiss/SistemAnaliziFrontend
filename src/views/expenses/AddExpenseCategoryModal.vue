@@ -7,7 +7,7 @@
     >
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-          <FolderPlusIcon :size="18" class="text-blue-600" />
+          <TagIcon :size="18" class="text-blue-600" />
           Yeni Gider Kategorisi
         </h3>
         <button
@@ -27,27 +27,28 @@
             v-model="categoryName"
             type="text"
             required
-            :disabled="isSaving"
-            placeholder="Örn: Faturalar, Ofis, Personel..."
+            :disabled="isLoading"
+            placeholder="Örn: Kira, Faturalar, Maaşlar..."
             class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm disabled:opacity-60"
           />
         </div>
 
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 mt-2">
           <button
             type="button"
             @click="emit('close')"
-            :disabled="isSaving"
+            :disabled="isLoading"
             class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             İptal
           </button>
           <button
             type="submit"
-            :disabled="isSaving"
-            class="px-5 py-2.5 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-200 transition-colors flex items-center gap-1 disabled:opacity-60"
+            :disabled="isLoading || !categoryName.trim()"
+            class="px-5 py-2.5 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-200 transition-colors flex items-center gap-1.5 disabled:opacity-60"
           >
-            {{ isSaving ? 'Kaydediliyor...' : 'Kategoriyi Ekle' }}
+            <CheckIcon v-if="!isLoading" :size="15" />
+            {{ isLoading ? 'Kaydediliyor...' : 'Kategori Ekle' }}
           </button>
         </div>
       </form>
@@ -57,7 +58,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { FolderPlusIcon, XIcon } from 'lucide-vue-next'
+import { TagIcon, XIcon, CheckIcon } from 'lucide-vue-next'
 
 const props = defineProps<{
   isOpen: boolean
@@ -65,32 +66,47 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'add', category: any): void
+  (e: 'success', category: { id: string; name: string }): void
 }>()
 
+const BASE_URL = 'http://31.210.36.10:5000/api'
+const isLoading = ref(false)
 const categoryName = ref('')
-const isSaving = ref(false)
 
 watch(
   () => props.isOpen,
-  (newVal) => {
-    if (!newVal) categoryName.value = ''
+  (val) => {
+    if (!val) categoryName.value = ''
   },
 )
 
 const handleSubmit = async () => {
-  if (!categoryName.value.trim() || isSaving.value) return
+  if (!categoryName.value.trim() || isLoading.value) return
 
-  isSaving.value = true
+  isLoading.value = true
   try {
-    // Kendi API mantığına uyarlayabilirsin
-    const newCategory = { id: Date.now().toString(), name: categoryName.value.trim(), type: 1 }
-    emit('add', newCategory)
-    emit('close')
-  } catch (error) {
-    console.error('Kategori eklenirken hata oluştu:', error)
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${BASE_URL}/Expenses/categories`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: categoryName.value.trim() }),
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      emit('success', data.category)
+      emit('close')
+    } else {
+      alert(data.message || 'Kategori eklenirken hata oluştu.')
+    }
+  } catch {
+    alert('Sunucuyla bağlantı kurulamadı.')
   } finally {
-    isSaving.value = false
+    isLoading.value = false
   }
 }
 </script>

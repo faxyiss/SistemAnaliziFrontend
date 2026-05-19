@@ -150,6 +150,7 @@ import {
   UserIcon,
   UserXIcon,
   WalletIcon,
+  BriefcaseIcon,
 } from 'lucide-vue-next'
 
 import BusinessProfileModal from '@/views/Components/BusinessProfileModal.vue'
@@ -158,12 +159,10 @@ import DeleteAccountModal from '@/views/Components/DeleteAccountModal.vue'
 
 const route = useRoute()
 
-// Menü ve Panel Durum Yönetimleri
 const isSettingsOpen = ref(false)
 const isUpdateProfileOpen = ref(false)
 const isDeleteAccountOpen = ref(false)
 
-// Profil Verisi Reactive State
 const profileData = ref({
   companyName: 'Yükleniyor...',
   fullName: 'Kullanıcı',
@@ -171,17 +170,12 @@ const profileData = ref({
   initial: '',
 })
 
-// 🎯 Profil verilerini API'den çeken ana fonksiyon (Yenileme için dışarı çıkardık)
 const fetchProfile = async () => {
   try {
     const token = localStorage.getItem('token')
-
     const response = await fetch('http://31.210.36.10:5000/api/BusinessProfile/my-profile', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-
     if (response.ok) {
       const data = await response.json()
       profileData.value.companyName = data.companyName
@@ -194,7 +188,6 @@ const fetchProfile = async () => {
   }
 }
 
-// Sayfa ilk yüklendiğinde profili çek
 onMounted(() => {
   fetchProfile()
 })
@@ -203,19 +196,16 @@ const handleLogout = () => {
   localStorage.removeItem('token')
 }
 
-// 🎯 GÜNCELLENEN AKSİYON 1: Profil Güncelleme Modalını Ateşle
 const handleUpdateProfile = () => {
-  isSettingsOpen.value = false // Küçük dropup listesini kapat
-  isUpdateProfileOpen.value = true // Modalı görünür yap moruq
+  isSettingsOpen.value = false
+  isUpdateProfileOpen.value = true
 }
 
-// 🎯 GÜNCELLENEN AKSİYON 2: Kullanıcıyı Silme Modalını Ateşle
 const handleDeleteUser = () => {
-  isSettingsOpen.value = false // Küçük dropup listesini kapat
-  isDeleteAccountOpen.value = true // Onay modalını görünür yap moruq
+  isSettingsOpen.value = false
+  isDeleteAccountOpen.value = true
 }
 
-// Menü Elemanları ve İkon Eşleştirmeleri
 const menuItems = [
   { name: 'Ana Sayfa', path: '/dashboard', icon: LayoutDashboardIcon },
   { name: 'Stok Yönetimi', path: '/stocks', icon: PackageIcon },
@@ -223,6 +213,7 @@ const menuItems = [
   { name: 'Hammadde ve Üretim', path: '/production', icon: LayersIcon },
   { name: 'Müşteri & Cari', path: '/customers', icon: UsersIcon },
   { name: 'Gider Yönetimi', path: '/expenses', icon: WalletIcon },
+  { name: 'Personel Yönetimi', path: '/employees', icon: BriefcaseIcon },
 ]
 
 const currentRouteName = computed(() => {

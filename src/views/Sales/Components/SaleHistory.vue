@@ -75,42 +75,33 @@
 
         <div class="space-y-1">
           <label class="text-[11px] font-bold text-slate-500">Ödeme Türü</label>
-          <select
+          <CustomDropdown
             v-model="filters.paymentType"
-            @change="emitFilterChange"
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white cursor-pointer focus:outline-none focus:border-blue-500"
-          >
-            <option :value="null">Tüm Ödeme Türleri</option>
-            <option :value="0">Nakit</option>
-            <option :value="1">Kredi Kartı</option>
-            <option :value="2">Veresiye</option>
-          </select>
+            :options="paymentTypeOptions"
+            @update:model-value="emitFilterChange"
+          />
         </div>
 
         <div class="space-y-1">
           <label class="text-[11px] font-bold text-slate-500">Müşteri</label>
-          <select
+          <CustomDropdown
             v-model="filters.customerId"
-            @change="emitFilterChange"
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white cursor-pointer focus:outline-none focus:border-blue-500"
-          >
-            <option :value="null">Tüm Müşteriler</option>
-            <option v-for="c in customersList" :key="c.id" :value="c.id">
-              {{ c.firstName }} {{ c.lastName }}
-            </option>
-          </select>
+            :options="customerOptions"
+            :searchable="true"
+            search-placeholder="Müşteri ara..."
+            @update:model-value="emitFilterChange"
+          />
         </div>
 
         <div class="space-y-1">
           <label class="text-[11px] font-bold text-slate-500">Kategori</label>
-          <select
+          <CustomDropdown
             v-model="filters.categoryId"
-            @change="emitFilterChange"
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white cursor-pointer focus:outline-none focus:border-blue-500"
-          >
-            <option :value="null">Tüm Kategoriler</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-          </select>
+            :options="categoryOptions"
+            :searchable="true"
+            search-placeholder="Kategori ara..."
+            @update:model-value="emitFilterChange"
+          />
         </div>
 
         <div class="space-y-1">
@@ -136,16 +127,11 @@
 
         <div class="space-y-1">
           <label class="text-[11px] font-bold text-slate-500">Sıralama Ölçütü</label>
-          <select
+          <CustomDropdown
             v-model="filters.sortBy"
-            @change="emitFilterChange"
-            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs bg-white cursor-pointer focus:outline-none focus:border-blue-500"
-          >
-            <option value="date_desc">Tarih: En Yeniden En Eskiye</option>
-            <option value="date_asc">Tarih: En Eskiden En Yeniye</option>
-            <option value="amount_desc">Tutar: En Yüksekten En Düşüğe</option>
-            <option value="amount_asc">Tutar: En Düşükten En Yükseğe</option>
-          </select>
+            :options="sortByOptions"
+            @update:model-value="emitFilterChange"
+          />
         </div>
       </div>
     </div>
@@ -258,6 +244,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, toRefs } from 'vue'
 import axios from 'axios'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import {
   SearchIcon,
   UserIcon,
@@ -300,6 +287,30 @@ const emit = defineEmits(['filter-changed', 'page-changed'])
 
 const showAdvancedFilters = ref(false)
 const categories = ref<Category[]>([])
+
+const paymentTypeOptions = [
+  { label: 'Tüm Ödeme Türleri', value: null },
+  { label: 'Nakit', value: 0 },
+  { label: 'Kredi Kartı', value: 1 },
+  { label: 'Veresiye', value: 2 },
+]
+
+const sortByOptions = [
+  { label: 'Tarih: En Yeniden En Eskiye', value: 'date_desc' },
+  { label: 'Tarih: En Eskiden En Yeniye', value: 'date_asc' },
+  { label: 'Tutar: En Yüksekten En Düşüğe', value: 'amount_desc' },
+  { label: 'Tutar: En Düşükten En Yükseğe', value: 'amount_asc' },
+]
+
+const customerOptions = computed(() => [
+  { label: 'Tüm Müşteriler', value: null },
+  ...customersList.value.map((c) => ({ label: `${c.firstName} ${c.lastName}`, value: c.id })),
+])
+
+const categoryOptions = computed(() => [
+  { label: 'Tüm Kategoriler', value: null },
+  ...categories.value.map((cat) => ({ label: cat.name, value: cat.id })),
+])
 
 // Backend formatına tam uyumlu filtre state nesnesi
 const filters = ref({

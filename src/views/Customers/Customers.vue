@@ -32,14 +32,12 @@
         />
       </div>
       <div class="flex gap-2 w-full md:w-auto">
-        <select
+        <CustomDropdown
           v-model="debtFilter"
-          class="w-full md:w-56 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-50 bg-white text-slate-600 font-medium cursor-pointer"
-        >
-          <option value="all">Tüm Müşteriler</option>
-          <option value="has_debt">Borcu Olanlar</option>
-          <option value="no_debt">Borcu Olmayanlar (Temiz)</option>
-        </select>
+          :options="debtFilterOptions"
+          width-class="w-full md:w-56"
+          @update:model-value="() => { pagination.value.page = 1; fetchCustomers() }"
+        />
       </div>
     </div>
 
@@ -242,6 +240,7 @@ import {
   HistoryIcon,
 } from 'lucide-vue-next'
 
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import AddCustomerModal from './AddCustomerModal.vue'
 import CustomerPaymentModal from './CustomerPaymentModal.vue'
 import EditCustomerModal from './EditCustomerModal.vue'
@@ -263,9 +262,15 @@ const customerToDeleteId = ref<string | null>(null)
 
 const searchQuery = ref('')
 const debtFilter = ref('all')
+
+const debtFilterOptions = [
+  { label: 'Tüm Müşteriler', value: 'all' },
+  { label: 'Borcu Olanlar', value: 'has_debt' },
+  { label: 'Borcu Olmayanlar (Temiz)', value: 'no_debt' },
+]
 const pagination = ref({ page: 1, pageSize: 10, totalPages: 0, totalItems: 0 })
 
-const API_URL = 'http://31.210.36.10:5000/api/Customers'
+const API_URL = 'Customers'
 
 const getAuthHeaders = () => {
   return { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
@@ -307,10 +312,6 @@ watch(searchQuery, () => {
   }, 500)
 })
 
-watch(debtFilter, () => {
-  pagination.value.page = 1
-  fetchCustomers()
-})
 
 const handleAddCustomer = async (formData: any) => {
   try {

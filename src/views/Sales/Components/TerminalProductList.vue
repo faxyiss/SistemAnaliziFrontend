@@ -27,28 +27,23 @@
           />
         </div>
         <div>
-          <select
+          <CustomDropdown
             v-model="filters.sortBy"
-            @change="triggerFilterChange"
-            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white cursor-pointer"
-          >
-            <option value="productno">Sırala: Ürün Kodu</option>
-            <option value="name">Sırala: İsim (A-Z)</option>
-            <option value="price">Sırala: Fiyat</option>
-          </select>
+            :options="sortOptions"
+            @update:model-value="triggerFilterChange"
+          />
         </div>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-center">
         <div class="md:col-span-2">
-          <select
+          <CustomDropdown
             v-model="filters.categoryId"
-            @change="triggerFilterChange"
-            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white cursor-pointer"
-          >
-            <option :value="null">Tüm Kategoriler</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-          </select>
+            :options="categoryOptions"
+            :searchable="true"
+            search-placeholder="Kategori ara..."
+            @update:model-value="triggerFilterChange"
+          />
         </div>
 
         <input
@@ -185,9 +180,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { PackageIcon } from 'lucide-vue-next'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 
 // INTERFACE GÜNCELLENDİ: description eklendi
 interface Product {
@@ -223,6 +219,17 @@ const filters = ref({
 })
 
 const categories = ref<Category[]>([])
+
+const sortOptions = [
+  { label: 'Sırala: Ürün Kodu', value: 'productno' },
+  { label: 'Sırala: İsim (A-Z)', value: 'name' },
+  { label: 'Sırala: Fiyat', value: 'price' },
+]
+
+const categoryOptions = computed(() => [
+  { label: 'Tüm Kategoriler', value: null },
+  ...categories.value.map((cat) => ({ label: cat.name, value: cat.id })),
+])
 
 onMounted(async () => {
   try {

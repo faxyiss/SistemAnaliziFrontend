@@ -37,29 +37,20 @@
         </div>
 
         <!-- Hammadde Sayısı Filtresi -->
-        <select
+        <CustomDropdown
           v-model="filterIngredientCount"
-          @change="applyFilters"
-          class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-700"
-        >
-          <option value="">Tüm Reçeteler</option>
-          <option value="1">1 Hammadde</option>
-          <option value="2">2 Hammadde</option>
-          <option value="3+">3+ Hammadde</option>
-        </select>
+          :options="ingredientCountOptions"
+          width-class="w-48"
+          @update:model-value="applyFilters"
+        />
 
         <!-- Sıralama -->
-        <select
+        <CustomDropdown
           v-model="sortBy"
-          @change="applyFilters"
-          class="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-700"
-        >
-          <option value="name_asc">İsme Göre (A→Z)</option>
-          <option value="name_desc">İsme Göre (Z→A)</option>
-          <option value="date_desc">En Yeni Önce</option>
-          <option value="date_asc">En Eski Önce</option>
-          <option value="ingredient_desc">En Çok Hammadde</option>
-        </select>
+          :options="sortOptions"
+          width-class="w-52"
+          @update:model-value="applyFilters"
+        />
 
         <!-- Filtre temizle -->
         <button
@@ -256,6 +247,7 @@ import {
   RotateCcwIcon,
 } from 'lucide-vue-next'
 
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import AddRecipeModal from './AddRecipeModal.vue'
 import ProduceModal from './ProduceModal.vue'
 
@@ -269,6 +261,21 @@ const selectedRecipe = ref<any>(null)
 const searchText = ref('')
 const filterIngredientCount = ref('')
 const sortBy = ref('date_desc')
+
+const ingredientCountOptions = [
+  { label: 'Tüm Reçeteler', value: '' },
+  { label: '1 Hammadde', value: '1' },
+  { label: '2 Hammadde', value: '2' },
+  { label: '3+ Hammadde', value: '3+' },
+]
+
+const sortOptions = [
+  { label: 'İsme Göre (A→Z)', value: 'name_asc' },
+  { label: 'İsme Göre (Z→A)', value: 'name_desc' },
+  { label: 'En Yeni Önce', value: 'date_desc' },
+  { label: 'En Eski Önce', value: 'date_asc' },
+  { label: 'En Çok Hammadde', value: 'ingredient_desc' },
+]
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -327,7 +334,7 @@ const fetchRecipes = async () => {
   isLoading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://31.210.36.10:5000/api/Production/recipes', {
+    const res = await fetch('/api/Production/recipes', {
       headers: { Authorization: `Bearer ${token}` },
     })
     if (res.ok) recipes.value = await res.json()
@@ -342,7 +349,7 @@ const handleDeleteRecipe = async (id: string) => {
   if (!confirm('Bu reçeteyi silmek istediğinize emin misiniz?')) return
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://31.210.36.10:5000/api/Production/recipe/${id}`, {
+    const res = await fetch(`/api/Production/recipe/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     })

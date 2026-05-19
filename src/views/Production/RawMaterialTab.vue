@@ -45,18 +45,12 @@
       </div>
 
       <!-- Stok Durumu Filtresi -->
-      <div class="w-full sm:w-52">
-        <select
-          v-model="stockFilter"
-          @change="handleFilters"
-          class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 transition-all font-medium text-slate-600"
-        >
-          <option value="">Tüm Stok Durumları</option>
-          <option value="low">Kritik Stok (≤10)</option>
-          <option value="ok">Yeterli Stok (>10)</option>
-          <option value="empty">Stok Yok (0)</option>
-        </select>
-      </div>
+      <CustomDropdown
+        v-model="stockFilter"
+        :options="stockFilterOptions"
+        width-class="w-full sm:w-52"
+        @update:model-value="handleFilters"
+      />
 
       <!-- Kategori Dropdown -->
       <div class="w-full sm:w-64 relative" @click.stop>
@@ -424,6 +418,7 @@ import {
   CheckIcon,
 } from 'lucide-vue-next'
 
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import AddRawMaterialModal from './AddRawMaterialModal.vue'
 import AddRawMaterialCategoryModal from './AddRawMaterialCategoryModal.vue'
 import DeleteRawMaterialModal from './DeleteRawMaterialModal.vue'
@@ -431,7 +426,7 @@ import StockInflowModal from '../stocks/StockInflowModal.vue'
 import StockHistoryModal from '../stocks/StockHistoryModal.vue'
 import EditProductModal from '../stocks/EditProductModal.vue'
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const BASE_URL = '/api'
 
 const rawMaterials = ref<any[]>([])
 const categories = ref<any[]>([])
@@ -440,6 +435,13 @@ const isLoading = ref(false)
 const searchText = ref('')
 const selectedCategory = ref('')
 const stockFilter = ref('')
+
+const stockFilterOptions = [
+  { label: 'Tüm Stok Durumları', value: '' },
+  { label: 'Kritik Stok (≤10)', value: 'low' },
+  { label: 'Yeterli Stok (>10)', value: 'ok' },
+  { label: 'Stok Yok (0)', value: 'empty' },
+]
 const sortBy = ref('date_desc')
 const page = ref(1)
 const pageSize = ref(10)

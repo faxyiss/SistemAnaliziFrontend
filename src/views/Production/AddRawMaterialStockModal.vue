@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="fixed inset-0 z-[70] flex items-center justify-center bg-gray-950/50 backdrop-blur-sm p-4 animate-fade-in"
@@ -132,6 +133,7 @@
       </form>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -177,7 +179,7 @@ const handleSubmit = async () => {
 
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/Stocks/inflow', {
+    const response = await fetch('/api/Stocks/inflow', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

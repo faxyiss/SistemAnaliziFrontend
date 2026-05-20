@@ -138,6 +138,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import { useRoute } from 'vue-router'
 import {
   LayoutDashboardIcon,
@@ -172,17 +173,13 @@ const profileData = ref({
 
 const fetchProfile = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/BusinessProfile/my-profile', {
-      headers: { Authorization: `Bearer ${token}` },
+    const res = await axios.get('/BusinessProfile/my-profile', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
-    if (response.ok) {
-      const data = await response.json()
-      profileData.value.companyName = data.companyName
-      profileData.value.fullName = data.fullName
-      profileData.value.roleDisplay = data.role === 'Admin' ? 'Yönetici' : 'Personel'
-      profileData.value.initial = data.initial
-    }
+    profileData.value.companyName = res.data.companyName
+    profileData.value.fullName = res.data.fullName
+    profileData.value.roleDisplay = res.data.role === 'Admin' ? 'Yönetici' : 'Personel'
+    profileData.value.initial = res.data.initial
   } catch (error) {
     console.error('Profil bilgileri yüklenirken hata oluştu:', error)
   }

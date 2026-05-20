@@ -487,6 +487,9 @@ import {
   ChevronDownIcon,
   SearchIcon,
 } from 'lucide-vue-next'
+import { useAlert } from '@/composables/useAlert'
+
+const { showSuccess, showError, showWarning } = useAlert()
 
 interface Product {
   id: string
@@ -589,10 +592,10 @@ const submitSingleSale = async () => {
     saleForm.value.customerId = null
     emit('clearSelection')
     emit('saleCompleted')
-    alert('Satış başarıyla tamamlandı!')
+    showSuccess('Satış başarıyla tamamlandı!')
   } catch (error) {
-    if (axios.isAxiosError(error)) alert(error.response?.data?.message || 'Satış hatası!')
-    else alert('Bilinmeyen bir hata oluştu.')
+    if (axios.isAxiosError(error)) showError(error.response?.data?.message || 'Satış hatası!')
+    else showError('Bilinmeyen bir hata oluştu.')
   } finally {
     isSubmitting.value = false
   }
@@ -637,7 +640,7 @@ const addToCart = () => {
 
   if (existingItem) {
     if (existingItem.quantity + cartForm.value.quantity > props.selectedProduct.remainingQuantity) {
-      alert('Bu ürün için stok sınırını aşıyorsunuz!')
+      showWarning('Bu ürün için stok sınırını aşıyorsunuz!')
       return
     }
     existingItem.quantity += cartForm.value.quantity
@@ -677,11 +680,11 @@ const submitBulkSale = async () => {
     cart.value = []
     bulkSaleForm.value.customerId = null
     emit('saleCompleted')
-    alert('Toplu sepet satışı başarıyla tamamlandı!')
+    showSuccess('Toplu sepet satışı başarıyla tamamlandı!')
   } catch (error) {
     if (axios.isAxiosError(error))
-      alert(error.response?.data?.message || 'Sepet satışı sırasında bir hata oluştu!')
-    else alert('Bilinmeyen bir hata oluştu.')
+      showError(error.response?.data?.message || 'Sepet satışı sırasında bir hata oluştu!')
+    else showError('Bilinmeyen bir hata oluştu.')
   } finally {
     isSubmitting.value = false
   }

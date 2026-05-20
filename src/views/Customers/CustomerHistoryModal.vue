@@ -147,7 +147,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['close'])
 
-const API_BASE_URL = 'http://31.210.36.10:5000/api' // Endpointleri ayırmak için base URL kullandık
+const API_BASE_URL = '/api' // Endpointleri ayırmak için base URL kullandık
 const historyList = ref<any[]>([])
 const isLoading = ref(false)
 const currentPage = ref(1)

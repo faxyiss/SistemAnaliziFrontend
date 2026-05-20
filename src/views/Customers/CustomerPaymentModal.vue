@@ -56,6 +56,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { XIcon, WalletIcon } from 'lucide-vue-next';
+import { useAlert } from '@/composables/useAlert'
+
+const { showWarning } = useAlert()
 
 const props = defineProps<{ isOpen: boolean; customer: any; }>();
 const emit = defineEmits(['close', 'save']);
@@ -67,12 +70,12 @@ const paymentForm = ref({
 
 const submitPayment = () => {
   if (!paymentForm.value.amount || paymentForm.value.amount <= 0) {
-    alert("Lütfen geçerli bir tutar girin.");
+    showWarning("Lütfen geçerli bir tutar girin.");
     return;
   }
   
   if (paymentForm.value.amount > props.customer.currentBalance) {
-    alert("Tahsilat tutarı toplam borçtan büyük olamaz!");
+    showWarning("Tahsilat tutarı toplam borçtan büyük olamaz!");
     return;
   }
 

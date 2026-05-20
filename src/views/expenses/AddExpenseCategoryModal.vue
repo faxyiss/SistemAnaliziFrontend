@@ -59,17 +59,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { TagIcon, XIcon, CheckIcon } from 'lucide-vue-next'
+import { useAlert } from '@/composables/useAlert'
 
 const props = defineProps<{
   isOpen: boolean
 }>()
+
+const { showError } = useAlert()
 
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'success', category: { id: string; name: string }): void
 }>()
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const BASE_URL = '/api'
 const isLoading = ref(false)
 const categoryName = ref('')
 
@@ -101,10 +104,10 @@ const handleSubmit = async () => {
       emit('success', data.category)
       emit('close')
     } else {
-      alert(data.message || 'Kategori eklenirken hata oluştu.')
+      showError(data.message || 'Kategori eklenirken hata oluştu.')
     }
   } catch {
-    alert('Sunucuyla bağlantı kurulamadı.')
+    showError('Sunucuyla bağlantı kurulamadı.')
   } finally {
     isLoading.value = false
   }

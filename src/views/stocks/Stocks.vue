@@ -454,8 +454,11 @@ import AddProductModal from './AddProductModal.vue'
 import EditProductModal from './EditProductModal.vue'
 import StockInflowModal from './StockInflowModal.vue'
 import StockHistoryModal from './StockHistoryModal.vue'
+import { useAlert } from '@/composables/useAlert'
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const { showSuccess, showError, showConfirm } = useAlert()
+
+const BASE_URL = '/api'
 
 const products = ref<any[]>([])
 const categories = ref<any[]>([])
@@ -550,17 +553,15 @@ const fetchProducts = async () => {
   isLoading.value = true
   try {
     const token = localStorage.getItem('token')
-    const url = new URL(`${BASE_URL}/Products/search`)
-    if (queryParams.value.searchText)
-      url.searchParams.append('SearchText', queryParams.value.searchText)
-    if (queryParams.value.categoryId)
-      url.searchParams.append('CategoryId', queryParams.value.categoryId)
-    url.searchParams.append('SortBy', queryParams.value.sortBy)
-    url.searchParams.append('IsDescending', queryParams.value.isDescending.toString())
-    url.searchParams.append('Page', queryParams.value.page.toString())
-    url.searchParams.append('PageSize', queryParams.value.pageSize.toString())
+    const params = new URLSearchParams()
+    if (queryParams.value.searchText) params.append('SearchText', queryParams.value.searchText)
+    if (queryParams.value.categoryId) params.append('CategoryId', queryParams.value.categoryId)
+    params.append('SortBy', queryParams.value.sortBy)
+    params.append('IsDescending', queryParams.value.isDescending.toString())
+    params.append('Page', queryParams.value.page.toString())
+    params.append('PageSize', queryParams.value.pageSize.toString())
 
-    const response = await fetch(url.toString(), {
+    const response = await fetch(`${BASE_URL}/Products/search?${params.toString()}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -609,7 +610,7 @@ const changePage = (pageNo: number) => {
 }
 
 const handleDeleteProduct = async (product: any) => {
-  const confirmDelete = confirm(
+  const confirmDelete = await showConfirm(
     `"${product.name}" isimli ürünü silmek istediğinize emin misiniz? Bu işlem ilişkili tüm stokları da silecektir.`,
   )
   if (!confirmDelete) return
@@ -624,14 +625,14 @@ const handleDeleteProduct = async (product: any) => {
     const data = await response.json()
 
     if (response.ok) {
-      alert(data.message || 'Ürün başarıyla silindi.')
+      showSuccess(data.message || 'Ürün başarıyla silindi.')
       fetchProducts()
     } else {
-      alert(data.message || 'Silme işlemi başarısız.')
+      showError(data.message || 'Silme işlemi başarısız.')
     }
   } catch (error) {
     console.error('Silme işlemi sırasında hata meydana geldi:', error)
-    alert('Sunucuyla bağlantı kurulamadı.')
+    showError('Sunucuyla bağlantı kurulamadı.')
   }
 }
 

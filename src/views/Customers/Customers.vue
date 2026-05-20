@@ -245,7 +245,10 @@ import AddCustomerModal from './AddCustomerModal.vue'
 import CustomerPaymentModal from './CustomerPaymentModal.vue'
 import EditCustomerModal from './EditCustomerModal.vue'
 import DeleteCustomerModal from './DeleteCustomerModal.vue'
-import CustomerHistoryModal from './CustomerHistoryModal.vue' // YENİ EKLENDİ
+import CustomerHistoryModal from './CustomerHistoryModal.vue'
+import { useAlert } from '@/composables/useAlert'
+
+const { showError } = useAlert()
 
 const customers = ref<any[]>([])
 const isLoading = ref(false)
@@ -324,7 +327,7 @@ const handleAddCustomer = async (formData: any) => {
     isAddModalOpen.value = false
     await fetchCustomers()
   } catch (error) {
-    alert('Müşteri eklenemedi!')
+    showError('Müşteri eklenemedi!')
   }
 }
 
@@ -335,7 +338,7 @@ const handleUpdateCustomer = async ({ id, payload }: any) => {
     await fetchCustomers()
   } catch (error) {
     console.error('Müşteri güncellenemedi:', error)
-    alert('Müşteri güncellenirken bir hata oluştu!')
+    showError('Müşteri güncellenirken bir hata oluştu!')
   }
 }
 
@@ -345,7 +348,7 @@ const handlePayment = async ({ customerId, payload }: any) => {
     isPaymentModalOpen.value = false
     await fetchCustomers()
   } catch (error) {
-    alert('Tahsilat eklenirken hata oluştu!')
+    showError('Tahsilat eklenirken hata oluştu!')
   }
 }
 
@@ -382,7 +385,7 @@ const confirmDeleteCustomer = async () => {
     await fetchCustomers()
   } catch (error) {
     console.error('Silme hatası:', error)
-    alert('Müşteri silinemedi!')
+    showError('Müşteri silinemedi!')
   }
 }
 

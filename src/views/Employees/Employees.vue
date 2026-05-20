@@ -455,8 +455,11 @@ import EditEmployeeModal from './EditEmployeeModal.vue'
 import PaySalaryModal from './PaySalaryModal.vue'
 import AddLeaveModal from './AddLeaveModal.vue'
 import EmployeeDetailModal from './EmployeeDetailModal.vue'
+import { useAlert } from '@/composables/useAlert'
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const { showError, showConfirm } = useAlert()
+
+const BASE_URL = '/api'
 
 // ── State ──────────────────────────────────────────────────
 const isLoading = ref(false)
@@ -592,7 +595,7 @@ const fetchSummary = async () => {
 }
 
 const handleDelete = async (emp: any) => {
-  if (!confirm(`"${emp.fullName}" isimli personeli silmek istediğinize emin misiniz?`)) return
+  if (!(await showConfirm(`"${emp.fullName}" isimli personeli silmek istediğinize emin misiniz?`))) return
   try {
     const token = localStorage.getItem('token')
     const res = await fetch(`${BASE_URL}/Employees/${emp.id}`, {
@@ -603,9 +606,9 @@ const handleDelete = async (emp: any) => {
     if (res.ok) {
       fetchEmployees()
       fetchSummary()
-    } else alert(data.message || 'Silme başarısız.')
+    } else showError(data.message || 'Silme başarısız.')
   } catch {
-    alert('Sunucuyla bağlantı kurulamadı.')
+    showError('Sunucuyla bağlantı kurulamadı.')
   }
 }
 

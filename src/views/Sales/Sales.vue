@@ -212,14 +212,13 @@ const loadSalesHistory = async () => {
     const res = await axios.get(`/Sales/history?${params.toString()}`, config)
 
     // Enum eşleşmesini güvenli hale getirme
-    const salesHistoryItems = (res.data.items || []) as Array<
-      Sale & { paymentType: string | number | null }
-    >
+    const salesHistoryItems = (res.data.items || []) as Array<Record<string, unknown>>
     salesList.value = salesHistoryItems.map((s) => {
+      const pt = s.paymentType
       let ptNum = 0
-      if (s.paymentType === 'KrediKarti' || s.paymentType === '1' || s.paymentType === 1) ptNum = 1
-      if (s.paymentType === 'Veresiye' || s.paymentType === '2' || s.paymentType === 2) ptNum = 2
-      return { ...s, paymentType: ptNum }
+      if (pt === 'KrediKarti' || pt === '1' || pt === 1) ptNum = 1
+      if (pt === 'Veresiye' || pt === '2' || pt === 2) ptNum = 2
+      return { ...s, paymentType: ptNum } as unknown as Sale
     })
 
     historyTotalPages.value = res.data.totalPages || 1

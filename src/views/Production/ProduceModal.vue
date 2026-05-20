@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-950/60 backdrop-blur-sm p-4 animate-fade-in"
@@ -37,18 +38,27 @@
 
         <div class="text-left mb-6">
           <label class="block mb-1.5 text-sm font-bold text-gray-700">Üretim Miktarı</label>
-          <div class="relative">
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              @click="decrement"
+              :disabled="quantity <= 1 || isSubmitting"
+              class="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 text-xl font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
+            >−</button>
             <input
               v-model.number="quantity"
+              @input="clampQuantity"
               type="number"
               min="1"
               step="1"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 block w-full p-3 transition-all outline-none"
-              placeholder="Örn: 10"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-lg font-bold rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 block w-full p-3 text-center transition-all outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
-            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold"
-              >Adet</span
-            >
+            <button
+              type="button"
+              @click="increment"
+              :disabled="isSubmitting"
+              class="w-11 h-11 flex items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 text-xl font-bold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
+            >+</button>
           </div>
         </div>
 
@@ -73,6 +83,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -92,6 +103,13 @@ const successMessage = ref('')
 const quantity = ref(1)
 
 // Miktar geçerlilik kontrolü — NaN, negatif ve sıfıra karşı koruma
+const increment = () => { quantity.value = Math.floor(quantity.value || 1) + 1 }
+const decrement = () => { quantity.value = Math.max(1, Math.floor(quantity.value || 1) - 1) }
+const clampQuantity = () => {
+  const v = Math.floor(quantity.value)
+  quantity.value = isNaN(v) || v < 1 ? 1 : v
+}
+
 const isQuantityValid = computed(() => {
   return (
     quantity.value !== null &&
@@ -109,6 +127,7 @@ watch(
       quantity.value = 1
       errorMessage.value = ''
       successMessage.value = ''
+      isSubmitting.value = false
     }
   },
 )
@@ -126,7 +145,7 @@ const handleProduce = async () => {
 
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/Production/produce', {
+    const response = await fetch('/api/Production/produce', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -142,18 +161,17 @@ const handleProduce = async () => {
 
     if (response.ok) {
       successMessage.value = 'Üretim başarıyla tamamlandı ve stoklara eklendi.'
-      // 1.5 saniye sonra modalı kapat ve parent'ı bilgilendir
+      // isSubmitting = true kalır → buton kapalı, modal kapanana kadar tekrar basılamaz
       setTimeout(() => {
         emit('success')
-      }, 1500)
+      }, 800)
     } else {
-      // Backend'den gelen hata mesajını farklı formatlarda yakala
       errorMessage.value =
         data.message || data.title || data.detail || 'Üretim sırasında bir hata oluştu.'
+      isSubmitting.value = false
     }
   } catch (error) {
     errorMessage.value = 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.'
-  } finally {
     isSubmitting.value = false
   }
 }

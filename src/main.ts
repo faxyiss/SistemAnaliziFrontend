@@ -4,9 +4,9 @@ import './assets/main.css'
 
 import App from './App.vue'
 import router from './router'
-import VueApexCharts from "vue3-apexcharts"; // 1. EKLENEN SATIR
+import VueApexCharts from 'vue3-apexcharts' // 1. EKLENEN SATIR
 import axios from 'axios' // Bunu Ekle
-axios.defaults.baseURL = 'http://31.210.36.10:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 
 const app = createApp(App)
 

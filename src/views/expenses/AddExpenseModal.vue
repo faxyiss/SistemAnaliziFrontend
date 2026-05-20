@@ -254,6 +254,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useAlert } from '@/composables/useAlert'
 import {
   ReceiptIcon,
   XIcon,
@@ -266,6 +267,8 @@ import {
   CalendarRangeIcon,
 } from 'lucide-vue-next'
 
+const { showError } = useAlert()
+
 const props = defineProps<{
   isOpen: boolean
   categories: { id: string; name: string }[]
@@ -277,7 +280,7 @@ const emit = defineEmits<{
   (e: 'open-category-modal'): void
 }>()
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const BASE_URL = '/api'
 const isLoading = ref(false)
 const isCategoryDropdownOpen = ref(false)
 const categorySearch = ref('')
@@ -296,7 +299,7 @@ const defaultForm = () => ({
 
 const form = ref(defaultForm())
 
-const expenseTypes = [
+const expenseTypes: { value: 0 | 1 | 2; label: string; icon: unknown }[] = [
   { value: 0, label: 'Tek Seferlik', icon: ZapIcon },
   { value: 1, label: 'Aylık Sabit', icon: RepeatIcon },
   { value: 2, label: 'Dönemsel', icon: CalendarRangeIcon },
@@ -387,10 +390,10 @@ const handleSubmit = async () => {
       emit('success')
       emit('close')
     } else {
-      alert(data.message || 'Gider kaydedilirken hata oluştu.')
+      showError(data.message || 'Gider kaydedilirken hata oluştu.')
     }
   } catch {
-    alert('Sunucuyla bağlantı kurulamadı.')
+    showError('Sunucuyla bağlantı kurulamadı.')
   } finally {
     isLoading.value = false
   }

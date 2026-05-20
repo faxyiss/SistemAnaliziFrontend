@@ -451,8 +451,11 @@ import {
 
 import AddExpenseModal from './AddExpenseModal.vue'
 import AddExpenseCategoryModal from './AddExpenseCategoryModal.vue'
+import { useAlert } from '@/composables/useAlert'
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const { showError, showConfirm } = useAlert()
+
+const BASE_URL = '/api'
 
 // ── State ──────────────────────────────────────────────────
 const isLoading = ref(false)
@@ -617,17 +620,16 @@ const fetchExpenses = async () => {
   isLoading.value = true
   try {
     const token = localStorage.getItem('token')
-    const url = new URL(`${BASE_URL}/Expenses`)
-    url.searchParams.append('page', queryParams.value.page.toString())
-    url.searchParams.append('pageSize', queryParams.value.pageSize.toString())
-    url.searchParams.append('month', queryParams.value.month.toString())
-    url.searchParams.append('year', queryParams.value.year.toString())
-    if (queryParams.value.categoryId)
-      url.searchParams.append('categoryId', queryParams.value.categoryId)
+    const params = new URLSearchParams()
+    params.append('page', queryParams.value.page.toString())
+    params.append('pageSize', queryParams.value.pageSize.toString())
+    params.append('month', queryParams.value.month.toString())
+    params.append('year', queryParams.value.year.toString())
+    if (queryParams.value.categoryId) params.append('categoryId', queryParams.value.categoryId)
     if (queryParams.value.expenseType !== null)
-      url.searchParams.append('expenseType', queryParams.value.expenseType.toString())
+      params.append('expenseType', queryParams.value.expenseType.toString())
 
-    const res = await fetch(url.toString(), {
+    const res = await fetch(`${BASE_URL}/Expenses?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     })
 
@@ -649,7 +651,7 @@ const fetchExpenses = async () => {
 }
 
 const handleDelete = async (expense: any) => {
-  const ok = confirm(`"${expense.title}" giderini silmek istediğinize emin misiniz?`)
+  const ok = await showConfirm(`"${expense.title}" giderini silmek istediğinize emin misiniz?`)
   if (!ok) return
 
   try {
@@ -662,10 +664,10 @@ const handleDelete = async (expense: any) => {
     if (res.ok) {
       fetchExpenses()
     } else {
-      alert(data.message || 'Silme işlemi başarısız.')
+      showError(data.message || 'Silme işlemi başarısız.')
     }
   } catch {
-    alert('Sunucuyla bağlantı kurulamadı.')
+    showError('Sunucuyla bağlantı kurulamadı.')
   }
 }
 

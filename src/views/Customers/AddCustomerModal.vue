@@ -52,6 +52,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { XIcon } from 'lucide-vue-next';
+import { useAlert } from '@/composables/useAlert'
+
+const { showWarning } = useAlert()
 
 defineProps<{ isOpen: boolean; }>();
 const emit = defineEmits(['close', 'save']);
@@ -66,7 +69,7 @@ const form = ref({
 
 const submitForm = () => {
   if (!form.value.firstName || !form.value.lastName) {
-    alert("Ad ve Soyad zorunludur!");
+    showWarning("Ad ve Soyad zorunludur!");
     return;
   }
   emit('save', { ...form.value });

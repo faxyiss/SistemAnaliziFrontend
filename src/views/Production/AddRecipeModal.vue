@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="fixed inset-0 z-[50] flex items-center justify-center bg-gray-950/50 backdrop-blur-sm p-4 animate-fade-in"
@@ -281,6 +282,7 @@
       @success="onProductAdded"
     />
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -322,18 +324,15 @@ const fetchAllData = async () => {
   try {
     const token = localStorage.getItem('token')
 
-    const prodRes = await fetch('http://31.210.36.10:5000/api/Products/search?PageSize=1000', {
+    const prodRes = await fetch('/api/Products/search?PageSize=1000', {
       headers: { Authorization: `Bearer ${token}` },
     })
     const prodData = await prodRes.json()
     finalProducts.value = prodData.items
 
-    const rawRes = await fetch(
-      'http://31.210.36.10:5000/api/Products/raw-materials?PageSize=1000',
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    )
+    const rawRes = await fetch('/api/Products/raw-materials?PageSize=1000', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     const rawData = await rawRes.json()
     rawMaterials.value = rawData.items
   } catch (error) {
@@ -359,7 +358,8 @@ const toggleDropdown = (index: number) => {
 }
 
 const selectRawMaterial = (itemIndex: number, rmId: string) => {
-  form.value.items[itemIndex].rawMaterialId = rmId
+  const item = form.value.items[itemIndex]
+  if (item) item.rawMaterialId = rmId
   openDropdownIndex.value = null
 }
 
@@ -409,7 +409,7 @@ const handleSubmit = async () => {
   errorMessage.value = ''
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/Production/recipe', {
+    const response = await fetch('/api/Production/recipe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify(form.value),

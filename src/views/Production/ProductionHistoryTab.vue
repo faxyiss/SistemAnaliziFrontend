@@ -1,7 +1,7 @@
 <template>
-  <div class="space-y-4 p-0">
+  <div class="space-y-5 animate-fade-in">
     <!-- Başlık + Filtreler -->
-    <div class="bg-white p-5 border-b border-slate-100 space-y-4">
+    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>
           <h3 class="text-lg font-bold text-gray-900">Üretim Geçmişi</h3>
@@ -53,15 +53,12 @@
           />
         </div>
 
-        <select
+        <CustomDropdown
           v-model="filters.sortBy"
-          @change="onFilterChange"
-          class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-700"
-        >
-          <option value="date">Tarihe Göre</option>
-          <option value="quantity">Miktara Göre</option>
-          <option value="totalcost">Maliyete Göre</option>
-        </select>
+          :options="sortByOptions"
+          width-class="w-44"
+          @update:model-value="onFilterChange"
+        />
 
         <button
           @click="toggleSortDir"
@@ -71,20 +68,17 @@
           {{ filters.isDescending ? 'Azalan' : 'Artan' }}
         </button>
 
-        <select
+        <CustomDropdown
           v-model="filters.pageSize"
-          @change="onFilterChange"
-          class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-medium text-slate-700"
-        >
-          <option :value="10">10 / sayfa</option>
-          <option :value="25">25 / sayfa</option>
-          <option :value="50">50 / sayfa</option>
-        </select>
+          :options="pageSizeOptions"
+          width-class="w-36"
+          @update:model-value="onFilterChange"
+        />
       </div>
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 px-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3.5">
         <p class="text-[11px] font-bold text-blue-500 uppercase tracking-wider">Toplam Emir</p>
         <p class="text-2xl font-extrabold text-blue-700 mt-1">{{ summary.totalCount }}</p>
@@ -110,7 +104,7 @@
     </div>
 
     <!-- Tablo -->
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mx-5">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
       <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse table-auto">
           <thead>
@@ -195,10 +189,9 @@
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- Sayfalama -->
-    <div class="flex items-center justify-between px-5 pb-5">
+      <!-- Sayfalama -->
+      <div class="border-t border-slate-100 px-6 py-4 flex items-center justify-between bg-slate-50/50">
       <p class="text-xs text-slate-500 font-medium">
         Toplam <span class="font-bold text-slate-700">{{ summary.totalCount }}</span> kayıt &mdash;
         Sayfa <span class="font-bold text-slate-700">{{ currentPage }}</span> /
@@ -250,6 +243,7 @@
         </button>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -266,6 +260,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-vue-next'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 
 interface ProductionLog {
   id: string
@@ -281,6 +276,18 @@ const isLoading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const summary = ref({ totalCount: 0, totalQuantity: 0, totalCost: 0, uniqueProducts: 0 })
+
+const sortByOptions = [
+  { label: 'Tarihe Göre', value: 'date' },
+  { label: 'Miktara Göre', value: 'quantity' },
+  { label: 'Maliyete Göre', value: 'totalcost' },
+]
+
+const pageSizeOptions = [
+  { label: '10 / sayfa', value: 10 },
+  { label: '25 / sayfa', value: 25 },
+  { label: '50 / sayfa', value: 50 },
+]
 
 const filters = ref({
   searchText: '',
@@ -309,7 +316,7 @@ const fetchLogs = async (page = 1) => {
     if (filters.value.startDate) params.append('startDate', filters.value.startDate)
     if (filters.value.endDate) params.append('endDate', filters.value.endDate)
 
-    const res = await fetch(`http://31.210.36.10:5000/api/Production/logs?${params}`, {
+    const res = await fetch(`/api/Production/logs?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     if (res.ok) {

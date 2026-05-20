@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="fixed inset-0 z-[80] flex items-center justify-center p-4 animate-fade-in"
@@ -53,6 +54,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -68,7 +70,7 @@ const emit = defineEmits(['close', 'success'])
 
 const isSubmitting = ref(false)
 const errorMessage = ref('')
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const BASE_URL = '/api'
 
 // Pencere her açıldığında eski hata mesajlarını temizle
 watch(

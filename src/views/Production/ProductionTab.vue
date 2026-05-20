@@ -1,7 +1,7 @@
 <template>
-  <div class="space-y-0">
+  <div class="space-y-5 animate-fade-in">
     <!-- Başlık + Arama + Filtreler -->
-    <div class="flex flex-col gap-4 p-5 border-b border-slate-200 bg-white">
+    <div class="flex flex-col gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="bg-blue-600/10 p-2.5 rounded-xl">
@@ -72,7 +72,7 @@
     </div>
 
     <!-- Tablo -->
-    <div class="bg-white border-b border-slate-100">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse table-auto">
           <thead>
@@ -206,17 +206,17 @@
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- Alt bilgi -->
-    <div
-      v-if="!isLoading && filteredRecipes.length > 0"
-      class="px-6 py-3 bg-white border-b border-slate-100"
-    >
-      <p class="text-xs text-slate-400 font-medium">
-        Toplam <span class="font-bold text-slate-600">{{ filteredRecipes.length }}</span> reçete
-        listeleniyor
-      </p>
+      <!-- Alt bilgi -->
+      <div
+        v-if="!isLoading && filteredRecipes.length > 0"
+        class="px-6 py-3 border-t border-slate-100 bg-slate-50/30"
+      >
+        <p class="text-xs text-slate-400 font-medium">
+          Toplam <span class="font-bold text-slate-600">{{ filteredRecipes.length }}</span> reçete
+          listeleniyor
+        </p>
+      </div>
     </div>
 
     <AddRecipeModal
@@ -250,6 +250,9 @@ import {
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import AddRecipeModal from './AddRecipeModal.vue'
 import ProduceModal from './ProduceModal.vue'
+import { useAlert } from '@/composables/useAlert'
+
+const { showError, showConfirm } = useAlert()
 
 const recipes = ref<any[]>([])
 const isLoading = ref(false)
@@ -346,7 +349,7 @@ const fetchRecipes = async () => {
 }
 
 const handleDeleteRecipe = async (id: string) => {
-  if (!confirm('Bu reçeteyi silmek istediğinize emin misiniz?')) return
+  if (!(await showConfirm('Bu reçeteyi silmek istediğinize emin misiniz?'))) return
   try {
     const token = localStorage.getItem('token')
     const res = await fetch(`/api/Production/recipe/${id}`, {
@@ -356,10 +359,10 @@ const handleDeleteRecipe = async (id: string) => {
     if (res.ok) fetchRecipes()
     else {
       const data = await res.json()
-      alert(data.message || 'Silme işlemi başarısız.')
+      showError(data.message || 'Silme işlemi başarısız.')
     }
   } catch {
-    alert('Sunucu bağlantı hatası.')
+    showError('Sunucu bağlantı hatası.')
   }
 }
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col flex-1 w-full h-full bg-slate-50/50">
+  <div class="space-y-5 animate-fade-in">
     <!-- Başlık -->
     <div
-      class="shrink-0 flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 border-b border-slate-200 bg-white gap-4"
+      class="flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm gap-4"
     >
       <div class="flex items-center gap-3">
         <div class="bg-blue-600/10 p-2.5 rounded-xl">
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Filtreler -->
-    <div class="p-4 md:px-6 bg-white border-b border-slate-200 flex flex-col sm:flex-row gap-4">
+    <div class="p-4 md:p-5 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-4">
       <div class="flex-1 relative">
         <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" :size="18" />
         <input
@@ -170,17 +170,18 @@
     </div>
 
     <!-- Tablo -->
-    <div class="flex-1 overflow-x-auto relative min-h-[350px] p-4 md:p-6 bg-slate-50/50">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+      <div class="overflow-x-auto relative">
       <div
         v-if="isLoading"
-        class="absolute inset-0 bg-slate-50/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl"
+        class="absolute inset-0 bg-slate-50/80 backdrop-blur-sm z-10 flex items-center justify-center"
       >
         <div
           class="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"
         ></div>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div>
         <table v-if="rawMaterials.length > 0" class="w-full text-left border-collapse table-fixed">
           <thead>
             <tr
@@ -318,12 +319,12 @@
           </p>
         </div>
       </div>
-    </div>
+      </div>
 
-    <!-- Sayfalama -->
-    <div
-      class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between bg-white gap-4 shrink-0"
-    >
+      <!-- Sayfalama -->
+      <div
+        class="border-t border-slate-100 px-6 py-4 flex flex-col sm:flex-row items-center justify-between bg-slate-50/50 gap-4 shrink-0"
+      >
       <span class="text-sm text-slate-500 font-medium">
         Toplam <span class="font-bold text-slate-700">{{ totalCount }}</span> hammaddeden
         <span class="font-bold text-slate-700"
@@ -361,6 +362,7 @@
           Sonraki
         </button>
       </div>
+    </div>
     </div>
 
     <!-- Modaller -->
@@ -650,11 +652,11 @@ onUnmounted(() => {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.99);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 </style>

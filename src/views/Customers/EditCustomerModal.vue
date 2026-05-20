@@ -43,6 +43,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { XIcon } from 'lucide-vue-next';
+import { useAlert } from '@/composables/useAlert'
+
+const { showWarning } = useAlert()
 
 const props = defineProps<{
   isOpen: boolean;
@@ -70,7 +73,7 @@ watch(() => props.customer, (newCustomer) => {
 
 const submitForm = () => {
   if (!form.value.firstName || !form.value.lastName) {
-    alert("Ad ve Soyad alanları zorunludur!");
+    showWarning("Ad ve Soyad alanları zorunludur!");
     return;
   }
   emit('save', {

@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 backdrop-blur-sm p-4 animate-fade-in"
@@ -173,6 +174,7 @@
       </form>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -214,7 +216,7 @@ const filteredCategories = computed(() => {
 const fetchHammaddeCategories = async () => {
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/Categories', {
+    const response = await fetch('/api/Categories', {
       headers: { Authorization: `Bearer ${token}` },
     })
     if (response.ok) {
@@ -257,7 +259,7 @@ const handleSubmit = async () => {
 
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch('http://31.210.36.10:5000/api/Products/create', {
+    const response = await fetch('/api/Products/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

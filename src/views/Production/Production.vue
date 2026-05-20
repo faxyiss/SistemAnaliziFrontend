@@ -1,51 +1,43 @@
 <template>
-  <div class="space-y-0">
+  <div class="space-y-5">
     <!-- Tab Başlıkları -->
-    <div class="border-b border-gray-200 bg-white px-4 pt-3 rounded-t-2xl">
-      <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
-        <li class="mr-2" role="presentation">
-          <button
-            @click="activeTab = 'raw-materials'"
-            :class="[
-              'inline-block p-3.5 border-b-2 rounded-t-xl transition-colors',
-              activeTab === 'raw-materials'
-                ? 'border-blue-600 text-blue-600 bg-white'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-100',
-            ]"
-            type="button"
-          >
-            📦 Hammadde Deposu
-          </button>
-        </li>
-        <li class="mr-2" role="presentation">
-          <button
-            @click="activeTab = 'production'"
-            :class="[
-              'inline-block p-3.5 border-b-2 rounded-t-xl transition-colors',
-              activeTab === 'production'
-                ? 'border-blue-600 text-blue-600 bg-white'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-100',
-            ]"
-            type="button"
-          >
-            ⚙️ Üretim Paneli
-          </button>
-        </li>
-        <li class="mr-2" role="presentation">
-          <button
-            @click="activeTab = 'history'"
-            :class="[
-              'inline-block p-3.5 border-b-2 rounded-t-xl transition-colors',
-              activeTab === 'history'
-                ? 'border-blue-600 text-blue-600 bg-white'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-100',
-            ]"
-            type="button"
-          >
-            🕓 Üretim Geçmişi
-          </button>
-        </li>
-      </ul>
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 flex gap-1.5">
+      <button
+        @click="activeTab = 'raw-materials'"
+        :class="[
+          'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+          activeTab === 'raw-materials'
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700',
+        ]"
+        type="button"
+      >
+        📦 Hammadde Deposu
+      </button>
+      <button
+        @click="activeTab = 'production'"
+        :class="[
+          'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+          activeTab === 'production'
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700',
+        ]"
+        type="button"
+      >
+        ⚙️ Üretim Paneli
+      </button>
+      <button
+        @click="activeTab = 'history'"
+        :class="[
+          'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+          activeTab === 'history'
+            ? 'bg-blue-600 text-white shadow-sm'
+            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700',
+        ]"
+        type="button"
+      >
+        🕓 Üretim Geçmişi
+      </button>
     </div>
 
     <!-- Tab İçerikleri -->

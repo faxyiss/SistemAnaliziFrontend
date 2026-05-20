@@ -309,7 +309,7 @@ import {
   SettingsIcon,
 } from 'lucide-vue-next'
 
-const BASE_URL = 'http://31.210.36.10:5000/api'
+const BASE_URL = '/api'
 const getToken = () => localStorage.getItem('token')
 
 const now = new Date()
@@ -330,7 +330,7 @@ const isLoadingCustomers = ref(false)
 const isLoadingProducts = ref(false)
 const isLoadingRawMaterials = ref(false)
 const isLoadingProduction = ref(false)
-const isLoadingChart = ref(false)
+const isLoadingChart = ref(true)
 
 // ── Data ───────────────────────────────────────────────────
 const monthlySales = ref({ totalRevenue: 0, totalItems: 0 })
